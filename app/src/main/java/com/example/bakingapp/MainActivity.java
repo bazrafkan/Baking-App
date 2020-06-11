@@ -33,6 +33,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
+        setTitle("Baking Time");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
+
         mSwipeRefreshLayout = findViewById(R.id.sr_recipe_list);
         mRecyclerView = findViewById(R.id.rv_recipe_list);
 
