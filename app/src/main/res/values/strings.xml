@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Baking App</string>
+    <string name="backing_time">Baking Time</string>
+    <string name="details">Details</string>
 </resources>

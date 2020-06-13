@@ -2,7 +2,8 @@ package com.example.bakingapp;
 
 import com.example.bakingapp.adapter.RecipeAdapter;
 import com.example.bakingapp.model.Recipe;
-import com.example.bakingapp.task.RecipeTask;
+import com.example.bakingapp.repository.RecipeRepository;
+import com.example.bakingapp.utility.Constant;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,41 +11,41 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements RecipeTask.AsyncRecipeTaskResult,
+        implements RecipeRepository.AsyncRecipeRepository,
         SwipeRefreshLayout.OnRefreshListener,
         RecipeAdapter.RecipeAdapterOnClick {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private List<Recipe> mRecipeList;
-    private RecipeTask mRecipeTask;
+    private RecipeRepository mRecipeRepository;
     private RecyclerView mRecyclerView;
-    private static final String LIST_RECIPE_KEY = "recipe_list_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        setTitle("Baking Time");
+
+        setTitle(getString(R.string.backing_time));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
 
         mSwipeRefreshLayout = findViewById(R.id.sr_recipe_list);
         mRecyclerView = findViewById(R.id.rv_recipe_list);
 
-        mRecipeTask = new RecipeTask(this);
+        mRecipeRepository = new RecipeRepository();
+        mRecipeRepository.setAsyncRecipeRepository(this);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(LIST_RECIPE_KEY)) {
-            Serializable serializable = savedInstanceState.getSerializable(LIST_RECIPE_KEY);
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constant.LIST_RECIPE_KEY)) {
+            Serializable serializable = savedInstanceState.getSerializable(Constant.LIST_RECIPE_KEY);
             try {
                 mRecipeList = (ArrayList) serializable;
                 showListRecipe();
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity
         } else {
             getListRecipe();
         }
+
+        getListRecipe();
     }
 
     private void showListRecipe() {
@@ -67,43 +70,39 @@ public class MainActivity extends AppCompatActivity
 
     private void getListRecipe() {
         mSwipeRefreshLayout.setRefreshing(true);
-        mRecipeTask.execute();
+        mRecipeRepository.getRecipes();
     }
 
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         if (mRecipeList != null && mRecipeList.size() > 0) {
-            outState.putSerializable(LIST_RECIPE_KEY, new ArrayList<>(mRecipeList));
+            outState.putSerializable(Constant.LIST_RECIPE_KEY, new ArrayList<>(mRecipeList));
         }
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onPreExecute() {
-
+    public void onRefresh() {
+        mRecipeRepository.getRecipes();
     }
 
     @Override
-    public void onPostExecute(List<Recipe> recipeList) {
-        mRecipeList = recipeList;
+    public void onClick(int position) {
+        Intent intent = new Intent(MainActivity.this, DetailsRecipeActivity.class);
+        intent.putExtra(Constant.SELECTED_RECIPE_KEY, mRecipeList.get(position));
+        startActivity(intent);
+    }
+
+    @Override
+    public void onResponse(List<Recipe> recipes) {
+        mRecipeList = recipes;
         mSwipeRefreshLayout.setRefreshing(false);
         showListRecipe();
     }
 
     @Override
-    public void onFailureExecute(Throwable throwable) {
+    public void onFailure(Throwable t) {
         mSwipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public void onRefresh() {
-        mRecipeTask.execute();
-    }
-
-    @Override
-    public void onClick(int position) {
-        Recipe recipe = mRecipeList.get(position);
-        Toast.makeText(this, "Recipe: " + recipe.getName(), Toast.LENGTH_SHORT).show();
     }
 }

@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Recipe implements Serializable {
-    public static final String baseUrl = "https://d17h27t6h515a5.cloudfront.net/";
-    public static final String pathUrl = "topher/2017/May/59121517_baking/baking.json";
-
     private int id;
     private String name;
     private List<Ingredient> ingredients;
