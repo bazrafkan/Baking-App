@@ -21,6 +21,9 @@ android {
         }
     }
 
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -55,4 +58,8 @@ dependencies {
 
     // Material
     implementation 'com.google.android.material:material:1.1.0'
+
+    // ExoPlayer
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.10.5'
+    implementation 'com.google.android.exoplayer:exoplayer:2.8.4'
 }
