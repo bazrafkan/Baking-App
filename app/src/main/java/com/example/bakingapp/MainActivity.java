@@ -1,6 +1,7 @@
 package com.example.bakingapp;
 
 import com.example.bakingapp.adapter.RecipeAdapter;
+import com.example.bakingapp.adapter.RecipeAdapterOnClick;
 import com.example.bakingapp.model.Recipe;
 import com.example.bakingapp.repository.RecipeRepository;
 import com.example.bakingapp.utility.Constant;
@@ -21,7 +22,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements RecipeRepository.AsyncRecipeRepository,
         SwipeRefreshLayout.OnRefreshListener,
-        RecipeAdapter.RecipeAdapterOnClick {
+        RecipeAdapterOnClick {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private List<Recipe> mRecipeList;
@@ -55,8 +56,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             getListRecipe();
         }
-
-        getListRecipe();
     }
 
     private void showListRecipe() {
