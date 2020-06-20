@@ -17,13 +17,10 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
-    public interface RecipeAdapterOnClick {
-        void onClick(int position);
-    }
 
     private Context context;
     private List<Recipe> mRecipeList;
-    private RecipeAdapterOnClick recipeAdapterOnClick;
+    private static RecipeAdapterOnClick recipeAdapterOnClick;
 
     public RecipeAdapter(Context context, List<Recipe> mRecipeList) {
         this.context = context;
@@ -67,7 +64,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         }
     }
 
-    public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView mImageViewRecipe;
         TextView mTextViewTitle;
 
