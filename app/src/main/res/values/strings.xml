@@ -2,4 +2,6 @@
     <string name="app_name">Baking App</string>
     <string name="backing_time">Baking Time</string>
     <string name="details">Details</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 </resources>
