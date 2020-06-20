@@ -43,6 +43,7 @@ public class RecipeStepDetailsFragment extends Fragment {
     private SimpleExoPlayer player;
     private boolean isVisibleNext = false;
     private boolean isVisiblePrevious = false;
+    private long currentPosition;
 
     public static RecipeStepDetailsFragment newInstance(Step mStep) {
         RecipeStepDetailsFragment fragment = new RecipeStepDetailsFragment();
@@ -84,7 +85,35 @@ public class RecipeStepDetailsFragment extends Fragment {
         mButtonPrevious = view.findViewById(R.id.bn_previous_step);
 
         mStep = (Step) getArguments().getSerializable(Constant.RECIPE_STEP_KEY);
+        if (savedInstanceState != null) {
+            currentPosition = savedInstanceState.getLong(Constant.RECIPE_STEP_VIDEO_POSITION_KEY, 0);
+        }
         showDetails();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        currentPosition = player.getContentPosition();
+        outState.putLong(Constant.RECIPE_STEP_VIDEO_POSITION_KEY, player.getContentPosition());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (player != null) {
+            player.release();
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    private void hideSystemUi() {
+        mPlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
     private void showDetails() {
@@ -146,30 +175,11 @@ public class RecipeStepDetailsFragment extends Fragment {
         MediaSource mediaSource = new ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uriOfContentUrl);
 
         //TODO add current position to save instance
-//        player.seekTo(currentPosition);
+        player.seekTo(currentPosition);
         player.setPlayWhenReady(true);
         player.prepare(mediaSource, false, false);
 
         mPlayerView.setPlayer(player);
 
-    }
-
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (player != null) {
-            player.release();
-        }
-    }
-
-    @SuppressLint("InlinedApi")
-    private void hideSystemUi() {
-        mPlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 }
