@@ -15,9 +15,13 @@ import com.example.bakingapp.utility.Constant;
 
 public class DetailsRecipeActivity
         extends AppCompatActivity
-        implements RecipeAdapterOnClick {
+        implements RecipeAdapterOnClick,
+        RecipeStepDetailsFragment.RecipeStepClick {
 
     private Recipe mRecipe;
+    private RecipeDetailsListFragment recipeDetailsListFragment;
+    private RecipeIngredientsListFragment recipeIngredientsListFragment;
+    private RecipeStepDetailsFragment recipeStepDetailsFragment;
     private int indexRecipe;
     private int layoutPosition;
 
@@ -71,6 +75,20 @@ public class DetailsRecipeActivity
         }
     }
 
+    @Override
+    public void onNextClick() {
+        indexRecipe++;
+        checkButtonVisibility(recipeStepDetailsFragment);
+        recipeStepDetailsFragment.setStep(mRecipe.getSteps().get(indexRecipe));
+    }
+
+    @Override
+    public void onPreviousClick() {
+        indexRecipe--;
+        checkButtonVisibility(recipeStepDetailsFragment);
+        recipeStepDetailsFragment.setStep(mRecipe.getSteps().get(indexRecipe));
+    }
+
     private void showUI() {
         switch (layoutPosition) {
             case 0:
@@ -87,7 +105,7 @@ public class DetailsRecipeActivity
 
     private void showRecipe() {
         layoutPosition = 0;
-        RecipeDetailsListFragment recipeDetailsListFragment = RecipeDetailsListFragment
+        recipeDetailsListFragment = RecipeDetailsListFragment
                 .newInstance(mRecipe);
         recipeDetailsListFragment.setRecipeAdapterOnClick(this);
         getSupportFragmentManager().beginTransaction()
@@ -97,7 +115,7 @@ public class DetailsRecipeActivity
 
     private void showRecipeIngredients() {
         layoutPosition = 1;
-        RecipeIngredientsListFragment recipeIngredientsListFragment = RecipeIngredientsListFragment
+        recipeIngredientsListFragment = RecipeIngredientsListFragment
                 .newInstance(mRecipe.getIngredients());
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.recipe_details_list_container, recipeIngredientsListFragment)
@@ -106,24 +124,10 @@ public class DetailsRecipeActivity
 
     private void showRecipeStep() {
         layoutPosition = 2;
-        final RecipeStepDetailsFragment recipeStepDetailsFragment = RecipeStepDetailsFragment
+        recipeStepDetailsFragment = RecipeStepDetailsFragment
                 .newInstance(mRecipe.getSteps().get(indexRecipe));
         checkButtonVisibility(recipeStepDetailsFragment);
-        recipeStepDetailsFragment.setRecipeStepClick(new RecipeStepDetailsFragment.RecipeStepClick() {
-            @Override
-            public void onNextClick() {
-                indexRecipe++;
-                checkButtonVisibility(recipeStepDetailsFragment);
-                recipeStepDetailsFragment.setStep(mRecipe.getSteps().get(indexRecipe));
-            }
-
-            @Override
-            public void onPreviousClick() {
-                indexRecipe--;
-                checkButtonVisibility(recipeStepDetailsFragment);
-                recipeStepDetailsFragment.setStep(mRecipe.getSteps().get(indexRecipe));
-            }
-        });
+        recipeStepDetailsFragment.setRecipeStepClick(this);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.recipe_details_list_container, recipeStepDetailsFragment)
                 .commit();
